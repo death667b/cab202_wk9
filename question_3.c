@@ -50,6 +50,7 @@ int main() {
 
         // Get the current system time
         // TODO
+        curr_time = get_system_time(TCNT1);
 
         // String-ise the current time, and draw it to the screen
         sprintf(buff, "%5.4f", curr_time);
@@ -70,7 +71,8 @@ int main() {
  void init_hardware(void) {
      // Initialising the LCD screen
      lcd_init(LCD_DEFAULT_CONTRAST);
-
+    DDRC  |= 1 << PIN7;
+    PORTC |= 1 << PIN7;
      // Initalising the push buttons as inputs
      DDRF &= ~((1 << PF5) | (1 << PF6));
 
@@ -79,28 +81,40 @@ int main() {
 
      // Setup TIMER1 in "normal" operation mode
      // TODO
+     TCCR1B &= ~(1 << WGM02);
 
      // Set the prescaler for TIMER1 so that the clock overflows every ~2.1 seconds
      // TODO
+    TCCR1B |= 1 << CS02;
+    TCCR1B &= ~(1 << CS01);
+    TCCR1B &= ~(1 << CS01);     
 
      // Enable the Timer Overflow Interrupt for TIMER1
      // TODO
+    TIMSK1 |= 1 << TOIE1;
 
      // Globally enable interrupts
      // TODO
+    sei();
  }
 
  void pause_while_pressed(void) {
      // This function should pause if the right button is pressed, and not return
      // until the button is released
      // TODO
+    if (PINF >> PIN5 & 0b1){
+        _delay_ms(50);
+        while(PINF >> PIN5 & 0b1);
+        _delay_ms(50);
+        
+    }
  }
 
 double get_system_time(unsigned int timer_count) {
     // Based on the current count, frequency, and prescaler - return the current
     // count time in seconds
     // TODO
-    return 0.0;
+    return timer_count/31250.0;
 }
 
 /*
@@ -109,4 +123,6 @@ double get_system_time(unsigned int timer_count) {
 ISR(TIMER1_OVF_vect) {
     // Interrupt service routine for TIMER1. Toggle an LED everytime this ISR runs
     // TODO
+    PORTB ^= 1 << PB3;
+    PORTB ^= 1 << PB2;
 }

@@ -7,7 +7,7 @@
 #
 
 # Modify these
-SRC=question_2
+SRC=question_3
 CAB202_LIB_DIR=../cab202_teensy
 
 # The rest should be all good as is

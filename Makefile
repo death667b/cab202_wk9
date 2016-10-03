@@ -7,7 +7,7 @@
 #
 
 # Modify these
-SRC=T9-code
+SRC=question_1
 CAB202_LIB_DIR=../cab202_teensy
 
 # The rest should be all good as is

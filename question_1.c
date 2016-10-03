@@ -63,7 +63,8 @@ int main() {
 void init_hardware(void) {
     // Initialising the LCD screen
     lcd_init(LCD_DEFAULT_CONTRAST);
-
+    DDRC  |= 1 << PIN7;
+    PORTC |= 1 << PIN7;
     // Initalising the push buttons as inputs
     DDRF &= ~((1 << PF5) | (1 << PF6));
 
@@ -76,4 +77,19 @@ void check_presses_debounced(void) {
     // button is RELEASED. Left decreases the count by 1, right increases the
     // count by 1.
     // TODO
+
+    if (PINF >> PIN5 & 0b1){
+        _delay_ms(50);
+        while(PINF >> PIN5 & 0b1);
+        _delay_ms(50);
+        press_count++;
+    }
+
+    if (PINF >> PIN6 & 0b1){
+        _delay_ms(50);
+        while(PINF >> PIN6 & 0b1);
+        _delay_ms(50);
+        press_count--;
+    }
+
 }

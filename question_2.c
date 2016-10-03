@@ -5,6 +5,7 @@
 *	Queensland University of Technology
 */
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdio.h>
 
@@ -49,6 +50,7 @@ int main() {
 
         // Get the current system time
         // TODO
+        curr_time = get_system_time(TCNT1);
 
         // String-ise the current time, and draw it to the screen
         sprintf(buff, "%5.4f", curr_time);
@@ -69,6 +71,8 @@ int main() {
 void init_hardware(void) {
     // Initialising the LCD screen
     lcd_init(LCD_DEFAULT_CONTRAST);
+    DDRC  |= 1 << PIN7;
+    PORTC |= 1 << PIN7;
 
     // Initalising the buttons as inputs
     DDRF &= ~((1 << PF5) | (1 << PF6));
@@ -78,20 +82,31 @@ void init_hardware(void) {
 
     // Set the pins to GUARANTEE that TIMER1 is in "normal" operation mode
     // TODO
+    TCCR1B &= ~(1 << WGM02);
 
     // Set the prescaler for TIMER1 so that the clock overflows every ~8.3 seconds
     // TODO
+    TCCR1B |= 1 << CS00 | 1 << CS02;
+    TCCR1B &= ~(1 << CS01);
+
+    TIMSK0 |= 1 << TOIE1;
 }
 
 void pause_while_pressed(void) {
     // This function should pause if the right button is pressed, and not return
     // until the button is released
     // TODO
+    if (PINF >> PIN5 & 0b1){
+        _delay_ms(50);
+        while(PINF >> PIN5 & 0b1);
+        _delay_ms(50);
+        
+    }
 }
 
 double get_system_time(unsigned int timer_count) {
     // Based on the current count, frequency, and prescaler - return the current
     // count time in seconds
     // TODO
-    return 0.0;
+    return timer_count/7812.5;
 }

@@ -156,7 +156,8 @@ void init_hardware(void) {
 
 
     TCCR0B &= ~(1 << WGM02);
-    TCCR0B |= 1 << CS00 | 1 << CS02;
+    TCCR0B |= 1 << CS02;
+    TCCR0B &= ~(1 << CS00);
     TCCR0B &= ~(1 << CS01);
 
     TIMSK0 |= 1 << TOIE0;
@@ -181,4 +182,25 @@ ISR(TIMER0_OVF_vect) {
     // Interrupt service routine for TIMER1. Toggle an LED everytime this ISR runs
     // TODO
 
+    PORTB ^= 1 << PB2;
+    for (int i = 0; i < NUM_BUTTONS; i++){
+        btn_hists[i]=btn_hists[i]<<1;
+    }
+
+    btn_hists[BTN_DPAD_LEFT]  |= ((PINB>>PIN1)&1)<<0;
+    btn_hists[BTN_DPAD_RIGHT] |= ((PIND>>PIN0)&1)<<0;
+    btn_hists[BTN_DPAD_UP]    |= ((PIND>>PIN1)&1)<<0;
+    btn_hists[BTN_DPAD_DOWN]  |= ((PINB>>PIN7)&1)<<0;
+    btn_hists[BTN_LEFT]       |= ((PINF>>PIN6)&1)<<0;
+    btn_hists[BTN_RIGHT]      |= ((PINF>>PIN5)&1)<<0;
+
+    for (int i = 0; i < NUM_BUTTONS; i++){
+        if (btn_hists[i] == 0xFF && btn_states[i] == BTN_STATE_UP) {
+            btn_states[i] = BTN_STATE_DOWN;
+            press_count++;
+            PORTB ^= 1 << PB3;
+        } else if (btn_hists[i] == 0x0 && btn_states[i] == BTN_STATE_DOWN) {
+            btn_states[i] = BTN_STATE_UP;
+        }
+    }
 }

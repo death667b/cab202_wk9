@@ -132,29 +132,53 @@ int main() {
 void init_hardware(void) {
     // Initialising the LCD screen
     lcd_init(LCD_DEFAULT_CONTRAST);
-
+    DDRC  |= 1 << PIN7;
+    PORTC |= 1 << PIN7;
     // Initalising the buttons as inputs
     // TODO
+    DDRF &= ~((1 << PF5) | (1 << PF6));
+    DDRB &= ~((1 << PB1) | (1 << PB7));
+    DDRC &= ~((1 << PD0) | (1 << PD1));
 
     // Initialising the LEDs as outputs
     // TODO
+    DDRB |= ((1 << PB2) | (1 << PB3));
 
     // Configure all necessary timers in "normal mode", enable all necessary
     // interupts, and configure prescalers as desired
     // TODO
+    TCCR1B &= ~(1 << WGM02); // Normal Mode
+
+    TCCR1B |= 1 << CS00 | 1 << CS02; // Set prescaler to 1024
+    TCCR1B &= ~(1 << CS01); // Set prescaler to 1024
+
+    TIMSK1 |= 1 << TOIE1; // Set Interrupt overflow
+
+
+    TCCR0B &= ~(1 << WGM02);
+    TCCR0B |= 1 << CS00 | 1 << CS02;
+    TCCR0B &= ~(1 << CS01);
+
+    TIMSK0 |= 1 << TOIE0;
 
     // Globally enable interrupts
     // TODO
+    sei();
 }
 
 double get_system_time(unsigned int timer_count) {
     // Based on the current count, frequency, and prescaler - return the current
     // count time in seconds
     // TODO
-    return 0.0;
+    return timer_count/7812.5;
 }
 
 /*
 * Interrupt service routines
 */
 // TODO
+ISR(TIMER0_OVF_vect) {
+    // Interrupt service routine for TIMER1. Toggle an LED everytime this ISR runs
+    // TODO
+
+}

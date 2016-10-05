@@ -87,7 +87,7 @@ int main() {
      // TODO
     TCCR1B |= 1 << CS02;
     TCCR1B &= ~(1 << CS01);
-    TCCR1B &= ~(1 << CS01);     
+    TCCR1B &= ~(1 << CS00);     
 
      // Enable the Timer Overflow Interrupt for TIMER1
      // TODO
